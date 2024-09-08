@@ -1,13 +1,24 @@
 
 //crud genérico
-
 const db = require('../Controllers/cnx');
 
-const atualizar = async function (tabela, colunaNome, nomeNovo, nomeAntigo) {
+// Função genérica para atualizar múltiplos atributos
+const atualizar = async function (tabela, valores, condicao) {
     try {
         await db.connect();
-        const query = `UPDATE ${tabela} SET ${colunaNome} = $1 WHERE ${colunaNome} = $2`;
-        await db.query(query, [nomeNovo, nomeAntigo]);
+        
+        const setClause = Object.keys(valores)
+            .map((coluna, index) => `${coluna} = $${index + 1}`)
+            .join(', ');
+        
+        const whereClause = Object.keys(condicao)
+            .map((coluna, index) => `${coluna} = $${Object.keys(valores).length + index + 1}`)
+            .join(' AND ');
+        
+        const query = `UPDATE ${tabela} SET ${setClause} WHERE ${whereClause}`;
+        const params = [...Object.values(valores), ...Object.values(condicao)];
+        
+        await db.query(query, params);
     } catch (erro) {
         console.error(`Erro ao atualizar na tabela ${tabela}:`, erro);
         throw erro;
@@ -16,11 +27,18 @@ const atualizar = async function (tabela, colunaNome, nomeNovo, nomeAntigo) {
     }
 };
 
-const inserir = async function (tabela, colunaNome, nome) {
+// Função genérica para inserir múltiplos atributos
+const inserir = async function (tabela, valores) {
     try {
         await db.connect();
-        const query = `INSERT INTO ${tabela} (${colunaNome}) VALUES ($1)`;
-        await db.query(query, [nome]);
+        
+        const colunas = Object.keys(valores).join(', ');
+        const placeholders = Object.keys(valores).map((_, index) => `$${index + 1}`).join(', ');
+        
+        const query = `INSERT INTO ${tabela} (${colunas}) VALUES (${placeholders})`;
+        const params = Object.values(valores);
+        
+        await db.query(query, params);
     } catch (erro) {
         console.error(`Erro ao inserir na tabela ${tabela}:`, erro);
         throw erro;
@@ -29,11 +47,19 @@ const inserir = async function (tabela, colunaNome, nome) {
     }
 };
 
-const deletar = async function (tabela, colunaNome, nome) {
+// Função genérica para deletar com condições
+const deletar = async function (tabela, condicao) {
     try {
         await db.connect();
-        const query = `DELETE FROM ${tabela} WHERE ${colunaNome} = $1`;
-        await db.query(query, [nome]);
+        
+        const whereClause = Object.keys(condicao)
+            .map((coluna, index) => `${coluna} = $${index + 1}`)
+            .join(' AND ');
+        
+        const query = `DELETE FROM ${tabela} WHERE ${whereClause}`;
+        const params = Object.values(condicao);
+        
+        await db.query(query, params);
     } catch (erro) {
         console.error(`Erro ao deletar na tabela ${tabela}:`, erro);
         throw erro;
@@ -42,11 +68,19 @@ const deletar = async function (tabela, colunaNome, nome) {
     }
 };
 
-const buscar = async function (tabela, colunaNome, nome) {
+// Função genérica para buscar com condições
+const buscar = async function (tabela, condicao) {
     try {
         await db.connect();
-        const query = `SELECT * FROM ${tabela} WHERE ${colunaNome} = $1`;
-        const resultado = await db.query(query, [nome]);
+        
+        const whereClause = Object.keys(condicao)
+            .map((coluna, index) => `${coluna} = $${index + 1}`)
+            .join(' AND ');
+        
+        const query = `SELECT * FROM ${tabela} WHERE ${whereClause}`;
+        const params = Object.values(condicao);
+        
+        const resultado = await db.query(query, params);
         return resultado.rows;
     } catch (erro) {
         console.error(`Erro ao buscar na tabela ${tabela}:`, erro);
@@ -57,3 +91,4 @@ const buscar = async function (tabela, colunaNome, nome) {
 };
 
 module.exports = { atualizar, inserir, deletar, buscar };
+
