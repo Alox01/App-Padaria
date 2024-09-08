@@ -22,8 +22,6 @@ const atualizar = async function (tabela, valores, condicao) {
     } catch (erro) {
         console.error(`Erro ao atualizar na tabela ${tabela}:`, erro);
         throw erro;
-    } finally {
-        await db.end();
     }
 };
 
@@ -42,8 +40,6 @@ const inserir = async function (tabela, valores) {
     } catch (erro) {
         console.error(`Erro ao inserir na tabela ${tabela}:`, erro);
         throw erro;
-    } finally {
-        await db.end();
     }
 };
 
@@ -63,8 +59,6 @@ const deletar = async function (tabela, condicao) {
     } catch (erro) {
         console.error(`Erro ao deletar na tabela ${tabela}:`, erro);
         throw erro;
-    } finally {
-        await db.end();
     }
 };
 
@@ -85,8 +79,6 @@ const buscar = async function (tabela, condicao) {
     } catch (erro) {
         console.error(`Erro ao buscar na tabela ${tabela}:`, erro);
         throw erro;
-    } finally {
-        await db.end();
     }
 };
 

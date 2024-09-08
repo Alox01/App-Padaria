@@ -7,7 +7,7 @@ const crud = require('../Models/crud');
 router.post('/:tabela/insere', async function (req, res) {
     try {
         const tabela = req.params.tabela;
-        const dados = req.body; // Exemplo: { nome_for: "Fornecedor A", cnpj_for: "12345678901234", ... }
+        const dados = req.body; // Exemplo: { nome_for: "Fornecedor A", cnpj_for: "12345678901234", ... } ou { "nome_cli": "João Silva", "cpf_cli": "12345678901", "email_cli": "joao.silva@email.com", "senha_cli": "senha123", "contato_cli": "11987654321" }
         
         await crud.inserir(tabela, dados);
         res.send('Inserido com sucesso');
@@ -20,7 +20,7 @@ router.post('/:tabela/insere', async function (req, res) {
 router.patch('/:tabela/atualiza', async function (req, res) {
     try {
         const tabela = req.params.tabela;
-        const { valores, condicao } = req.body; // Exemplo: { valores: { nome_for: "Novo Nome" }, condicao: { id_for: 1 } }
+        const { valores, condicao } = req.body; // Exemplo: { valores: { nome_for: "Novo Nome" }, condicao: { id_for: 1 } } ou { "nome_cli": "João Souza", "email_cli": "joao.souza@email.com", "contato_cli": "11912345678" }
         
         await crud.atualizar(tabela, valores, condicao);
         res.send('Atualizado com sucesso');
