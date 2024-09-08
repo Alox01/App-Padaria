@@ -18,6 +18,9 @@ const atualizar = async function (tabela, valores, condicao) {
         const query = `UPDATE ${tabela} SET ${setClause} WHERE ${whereClause}`;
         const params = [...Object.values(valores), ...Object.values(condicao)];
         
+        console.log('Query:', query);
+        console.log('Params:', params);
+        
         await db.query(query, params);
     } catch (erro) {
         console.error(`Erro ao atualizar na tabela ${tabela}:`, erro);
@@ -54,6 +57,9 @@ const deletar = async function (tabela, condicao) {
         
         const query = `DELETE FROM ${tabela} WHERE ${whereClause}`;
         const params = Object.values(condicao);
+        
+        console.log('Query:', query);
+        console.log('Params:', params);
         
         await db.query(query, params);
     } catch (erro) {
