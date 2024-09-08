@@ -1,28 +1,59 @@
-const db = require('../Controllers/cnx')
 
-const atualizar = async function (nomeNovo, nomeAntigo) {
-    await db.connect()
-    const dados = (" update clientes set nome_cli= $1 where nome_cli= $2 ")
-    await db.query(dados, [nomeNovo, nomeAntigo])
-}
+//crud genérico
 
-const inserir = async function (nome) {
-    await db.connect()
-    const query = "INSERT INTO clientes (nome_cli) VALUES ($1)"
-    await db.query(query, [nome])
-}
+const db = require('../Controllers/cnx');
 
-const deletar = async function (nome) {
-    await db.connect()
-    const query = "DELETE FROM clientes WHERE nome_cli = $1"
-    await db.query(query, [nome])
-}
+const atualizar = async function (tabela, colunaNome, nomeNovo, nomeAntigo) {
+    try {
+        await db.connect();
+        const query = `UPDATE ${tabela} SET ${colunaNome} = $1 WHERE ${colunaNome} = $2`;
+        await db.query(query, [nomeNovo, nomeAntigo]);
+    } catch (erro) {
+        console.error(`Erro ao atualizar na tabela ${tabela}:`, erro);
+        throw erro;
+    } finally {
+        await db.end();
+    }
+};
 
-const buscar = async function (nome) {
-    await db.connect()
-    const query = "SELECT * FROM clientes WHERE nome_cli = $1"
-    const resultado = await db.query(query, [nome])
-    return resultado.rows
-}
+const inserir = async function (tabela, colunaNome, nome) {
+    try {
+        await db.connect();
+        const query = `INSERT INTO ${tabela} (${colunaNome}) VALUES ($1)`;
+        await db.query(query, [nome]);
+    } catch (erro) {
+        console.error(`Erro ao inserir na tabela ${tabela}:`, erro);
+        throw erro;
+    } finally {
+        await db.end();
+    }
+};
 
-module.exports = { atualizar, inserir, deletar, buscar }
+const deletar = async function (tabela, colunaNome, nome) {
+    try {
+        await db.connect();
+        const query = `DELETE FROM ${tabela} WHERE ${colunaNome} = $1`;
+        await db.query(query, [nome]);
+    } catch (erro) {
+        console.error(`Erro ao deletar na tabela ${tabela}:`, erro);
+        throw erro;
+    } finally {
+        await db.end();
+    }
+};
+
+const buscar = async function (tabela, colunaNome, nome) {
+    try {
+        await db.connect();
+        const query = `SELECT * FROM ${tabela} WHERE ${colunaNome} = $1`;
+        const resultado = await db.query(query, [nome]);
+        return resultado.rows;
+    } catch (erro) {
+        console.error(`Erro ao buscar na tabela ${tabela}:`, erro);
+        throw erro;
+    } finally {
+        await db.end();
+    }
+};
+
+module.exports = { atualizar, inserir, deletar, buscar };
